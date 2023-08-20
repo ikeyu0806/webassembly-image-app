@@ -1,0 +1,21 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+    <h1>WebAssembly Demo</h1>
+    
+    <script>
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("/app/webassembly/main.wasm"), go.importObject)
+            .then(result => {
+                go.run(result.instance);
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    </script>
+</body>
+</html>

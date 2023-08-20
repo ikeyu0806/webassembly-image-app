@@ -1,0 +1,17 @@
+version: '3'
+services:
+  go-webassembly-app:
+    build:
+      context: ./
+    volumes:
+      - ./server:/app/server
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+      - ./index.html:/app/index.html
+      - webassembly_go_module_data:/go
+    ports:
+      # ローカルのポート被らないように
+      # 4321は適当
+      - "4321:80"
+volumes:
+  webassembly_go_module_data:
