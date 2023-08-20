@@ -4,7 +4,7 @@ COPY ./ /app
 
 WORKDIR /app
 
-RUN go get -u github.com/gin-gonic/gin
+RUN cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./webassembly/js
 
 RUN cd /app/webassembly && GOARCH=wasm GOOS=js go build -o main.wasm
 
