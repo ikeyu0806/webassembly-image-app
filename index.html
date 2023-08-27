@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Title</title>
+    <title>WebAssembly File Size</title>
 </head>
 <body>
-    <h1>WebAssembly Demo</h1>
+    <h1>WebAssembly File Size</h1>
+    <input type="file" id="fileInput" accept="image/*">
     <script src="/js/wasm_exec.js"></script>
     <script>
         const go = new Go();
+
         WebAssembly.instantiateStreaming(fetch("/wasm/main.wasm"), go.importObject)
             .then(result => {
                 go.run(result.instance);
+
+                const fileInput = document.getElementById('fileInput');
+                fileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        getFileSize(file);
+                    }
+                });
             })
             .catch(err => {
                 console.error(err);
