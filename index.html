@@ -6,6 +6,7 @@
 <body>
     <h1>WebAssembly File Size</h1>
     <input type="file" id="fileInput" accept="image/*">
+    <button id="getSizeButton">ファイルサイズを取得する</button>
     <script src="/js/wasm_exec.js"></script>
     <script>
         const go = new Go();
@@ -15,8 +16,10 @@
                 go.run(result.instance);
 
                 const fileInput = document.getElementById('fileInput');
-                fileInput.addEventListener('change', function(event) {
-                    const file = event.target.files[0];
+                const getSizeButton = document.getElementById('getSizeButton'); // 追加
+
+                getSizeButton.addEventListener('click', function() { // 追加
+                    const file = fileInput.files[0];
                     if (file) {
                         getFileSize(file);
                     }
