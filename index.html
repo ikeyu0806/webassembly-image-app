@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebAssembly File Size</title>
+    <title>Go WebAssembly</title>
 </head>
 <body>
-    <h1>WebAssembly File Size</h1>
+    <h1>Go WebAssembly</h1>
     <input type="file" id="fileInput" accept="image/*">
     <button id="getSizeButton">ファイルサイズを取得する</button>
+    <button id="convertToBlackAndWhiteButton">白黒に変換する</button>
     <script src="/js/wasm_exec.js"></script>
     <script>
         const go = new Go();
@@ -16,15 +17,29 @@
                 go.run(result.instance);
 
                 const fileInput = document.getElementById('fileInput');
-                const getSizeButton = document.getElementById('getSizeButton'); // 追加
+                const getSizeButton = document.getElementById('getSizeButton');
 
-                getSizeButton.addEventListener('click', function() { // 追加
+                getSizeButton.addEventListener('click', function() {
                     const file = fileInput.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = function() {
                             const arrayBuffer = this.result;
                             getFileSize(arrayBuffer);
+                        };
+                        reader.readAsArrayBuffer(file);
+                    }
+                });
+
+                const convertToBlackAndWhiteButton = document.getElementById('convertToBlackAndWhiteButton');
+
+                convertToBlackAndWhiteButton.addEventListener('click', function() {
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            const arrayBuffer = this.result;
+                            convertToBlackAndWhite(arrayBuffer);
                         };
                         reader.readAsArrayBuffer(file);
                     }
