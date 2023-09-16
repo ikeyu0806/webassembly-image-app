@@ -21,7 +21,12 @@
                 getSizeButton.addEventListener('click', function() { // 追加
                     const file = fileInput.files[0];
                     if (file) {
-                        getFileSize(file);
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            const arrayBuffer = this.result;
+                            getFileSize(arrayBuffer);
+                        };
+                        reader.readAsArrayBuffer(file);
                     }
                 });
             })
