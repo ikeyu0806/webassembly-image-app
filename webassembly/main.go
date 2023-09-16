@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"image/jpeg"
 	"image/png"
 	"syscall/js"
@@ -44,12 +45,35 @@ func convertToBlackAndWhite(this js.Value, args []js.Value) interface{} {
 		fmt.Println("画像デコードエラー:", err)
 		return nil
 	}
-	fmt.Printf("img: %v", img)
 
-	// resultArray := js.Global().Get("Uint8Array").New(len(imageBytes))
-	// js.CopyBytesToJS(resultArray, imageBytes)
+	bounds := img.Bounds()
+	grayImg := image.NewGray(bounds)
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			grayImg.Set(x, y, color.GrayModel.Convert(img.At(x, y)))
+		}
+	}
 
-	return nil
+	var resultBytes []byte
+	buffer := bytes.NewBuffer(resultBytes)
+	switch format {
+	case "jpeg":
+		if err := jpeg.Encode(buffer, grayImg, nil); err != nil {
+			fmt.Println("JPEGエンコードエラー:", err)
+			return nil
+		}
+	case "png":
+		if err := png.Encode(buffer, grayImg); err != nil {
+			fmt.Println("PNGエンコードエラー:", err)
+			return nil
+		}
+	}
+
+	resultArray := js.Global().Get("Uint8Array").New(len(resultBytes))
+	js.CopyBytesToJS(resultArray, resultBytes)
+	fmt.Printf("resultArray: %v", resultArray)
+
+	return resultArray
 }
 
 func main() {
