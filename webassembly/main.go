@@ -1,12 +1,8 @@
 package main
 
 import (
-	"bytes"
+	"encoding/base64"
 	"fmt"
-	"image"
-	"image/color"
-	"image/jpeg"
-	"image/png"
 	"syscall/js"
 )
 
@@ -27,53 +23,19 @@ func convertToBlackAndWhite(this js.Value, args []js.Value) interface{} {
 	imageBytes := make([]byte, uint8Array.Length())
 	js.CopyBytesToGo(imageBytes, uint8Array)
 
-	format := "jpeg"
+	newUint8Array := js.Global().Get("Uint8Array").New(len(imageBytes))
+	js.CopyBytesToJS(newUint8Array, imageBytes)
 
-	var img image.Image
-	var err error
-	switch format {
-	case "jpeg":
-		img, err = jpeg.Decode(bytes.NewReader(imageBytes))
-	case "png":
-		img, err = png.Decode(bytes.NewReader(imageBytes))
-	default:
-		fmt.Println("サポートされていない画像フォーマット:", format)
-		return nil
-	}
+	imgElement := js.Global().Get("document").Call("createElement", "img")
 
-	if err != nil {
-		fmt.Println("画像デコードエラー:", err)
-		return nil
-	}
+	dataURI := "data:image/png;base64," + base64.StdEncoding.EncodeToString(imageBytes)
 
-	bounds := img.Bounds()
-	grayImg := image.NewGray(bounds)
-	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			grayImg.Set(x, y, color.GrayModel.Convert(img.At(x, y)))
-		}
-	}
+	imgElement.Set("src", dataURI)
 
-	var resultBytes []byte
-	buffer := bytes.NewBuffer(resultBytes)
-	switch format {
-	case "jpeg":
-		if err := jpeg.Encode(buffer, grayImg, nil); err != nil {
-			fmt.Println("JPEGエンコードエラー:", err)
-			return nil
-		}
-	case "png":
-		if err := png.Encode(buffer, grayImg); err != nil {
-			fmt.Println("PNGエンコードエラー:", err)
-			return nil
-		}
-	}
+	var body = js.Global().Get("document").Get("body")
+	body.Call("appendChild", imgElement)
 
-	resultArray := js.Global().Get("Uint8Array").New(len(resultBytes))
-	js.CopyBytesToJS(resultArray, resultBytes)
-	fmt.Printf("resultArray: %v", resultArray)
-
-	return resultArray
+	return nil
 }
 
 func main() {
