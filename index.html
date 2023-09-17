@@ -8,7 +8,8 @@
     <input type="file" id="fileInput" accept="image/*">
     <button id="getSizeButton">ファイルサイズを取得する</button>
     <button id="showUploadedImageButton">選択画像を表示</button>
-    <button id="convertToBlackAndWhiteButton">選択画像を白黒に反転</button>
+    <button id="convertToBlackAndWhiteButton">選択画像を白黒に変換</button>
+    <button id="convertToSepiaButton">選択画像をセピア調に変換</button>
     <script src="/js/wasm_exec.js"></script>
     <script>
         const go = new Go();
@@ -55,6 +56,20 @@
                         reader.onload = function() {
                             const arrayBuffer = this.result;
                             convertToBlackAndWhite(arrayBuffer);
+                        };
+                        reader.readAsArrayBuffer(file);
+                    }
+                });
+
+                const convertToSepiaButton = document.getElementById('convertToSepiaButton');
+
+                convertToSepiaButton.addEventListener('click', function() {
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            const arrayBuffer = this.result;
+                            convertToSepia(arrayBuffer);
                         };
                         reader.readAsArrayBuffer(file);
                     }
