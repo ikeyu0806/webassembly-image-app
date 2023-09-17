@@ -7,7 +7,7 @@
     <h1>Go WebAssembly</h1>
     <input type="file" id="fileInput" accept="image/*">
     <button id="getSizeButton">ファイルサイズを取得する</button>
-    <button id="convertToBlackAndWhiteButton">白黒に変換する</button>
+    <button id="showUploadedImageButton">選択画像を表示</button>
     <script src="/js/wasm_exec.js"></script>
     <img id="resultImage" src="" alt="Converted Image"/>
     <script>
@@ -32,15 +32,15 @@
                     }
                 });
 
-                const convertToBlackAndWhiteButton = document.getElementById('convertToBlackAndWhiteButton');
+                const showUploadedImageButton = document.getElementById('showUploadedImageButton');
 
-                convertToBlackAndWhiteButton.addEventListener('click', function() {
+                showUploadedImageButton.addEventListener('click', function() {
                     const file = fileInput.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = function() {
                             const arrayBuffer = this.result;
-                            convertToBlackAndWhite(arrayBuffer);
+                            showUploadedImage(arrayBuffer);
                         };
                         reader.readAsArrayBuffer(file);
                     }
